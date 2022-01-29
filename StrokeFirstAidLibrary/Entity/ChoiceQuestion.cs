@@ -19,7 +19,6 @@ namespace StrokeFirstAidLibrary.Entity
         public int ID { get; set; }
         public string Name { get; set; } = string.Empty;
         public int? Value { get; set; }
-
         public int Left { get; set; }
         public int Right { get; set; }
         public int Layer { get; set; }

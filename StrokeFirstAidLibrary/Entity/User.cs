@@ -14,7 +14,9 @@ namespace StrokeFirstAidLibrary.Entity
     public class User
     {
         [Column(IsIdentity = true)]
-        public int ID { get; set; }      
-
+        public int ID { get; set; }
+        public string Token { get; set; } = string.Empty;
+        public DateTime? Expire { get; set; }
+        public bool? IsDelete { get; set; }
     }
 }

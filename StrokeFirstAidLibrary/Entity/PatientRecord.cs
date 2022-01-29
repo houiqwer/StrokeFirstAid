@@ -12,15 +12,14 @@ using TableAttribute = FreeSql.DataAnnotations.TableAttribute;
 
 namespace StrokeFirstAidLibrary.Entity
 {
-    [Table]
+    //首页查询和整体情况展示
+    [Table(DisableSyncStructure = true)]
     public class PatientRecord
     {
         [Column(IsIdentity = true)]
         public int ID { get; set; }
         public int PatientID { get; set; }
-
-
-        [Column(ServerTime = DateTimeKind.Utc, CanUpdate = false)]
-        public DateTime CreateDate { get; set; }
     }
+
+
 }

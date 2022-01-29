@@ -12,10 +12,53 @@ namespace StrokeFirstAidLibrary.BLL
 {
     public class TimelineBLL
     {
+        public APIResult Check(PatientTimeline patientTimeline)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Timeline selectedTimeLine = freeSQL.GetRepository<Timeline>().Where(a => a.ID == patientTimeline.TimelineID).First();
+                if (selectedTimeLine == null)
+                {
+                    throw new ExceptionUtil("未找到该时间点");
+                }
+
+                PatientTimeline selectedPatientTimeline = freeSQL.GetRepository<PatientTimeline>().Where(a => a.PatientID == patientTimeline.PatientID && a.TimelineID == selectedTimeLine.ID).First();
+                if (selectedPatientTimeline == null)
+                {
+                    freeSQL.GetRepository<PatientTimeline>().Insert(patientTimeline);
+                }
+                else
+                {
+                    freeSQL.GetRepository<PatientTimeline>().Attach(selectedPatientTimeline);
+                    selectedPatientTimeline.Remark = patientTimeline.Remark;
+                    freeSQL.GetRepository<PatientTimeline>().Update(selectedPatientTimeline);
+                }
+
+                result = APIResult.Success("时间点选择成功", selectedTimeLine);
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.添加错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+
+            return result;
+        }
+
+
         public APIResult CheckedList(int patientID)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
             try
             {
                 List<Timeline> timelineList = freeSQL.Select<Timeline>().Where(a => freeSQL.Select<PatientTimeline>().Where(b => b.PatientID == patientID && b.TimelineID == a.ID).Any()).ToList();
@@ -29,6 +72,7 @@ namespace StrokeFirstAidLibrary.BLL
 
             if (!string.IsNullOrEmpty(message))
             {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
                 result = APIResult.Error(message);
             }
 
@@ -39,6 +83,7 @@ namespace StrokeFirstAidLibrary.BLL
         {
             APIResult result = new APIResult();
             string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
             try
             {
                 List<Timeline> timelineList = freeSQL.Select<Timeline>().Where(a =>
@@ -54,6 +99,7 @@ namespace StrokeFirstAidLibrary.BLL
 
             if (!string.IsNullOrEmpty(message))
             {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
                 result = APIResult.Error(message);
             }
 

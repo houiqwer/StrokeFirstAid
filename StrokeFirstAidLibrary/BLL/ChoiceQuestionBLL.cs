@@ -16,9 +16,10 @@ namespace StrokeFirstAidLibrary.BLL
         {
             APIResult result = new APIResult();
             string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
             try
-            {               
-                ChoiceQuestion choiceQuestion = freeSQL.Select<ChoiceQuestion>().Where(a => a.ID == parentID).ToOne();
+            {
+                ChoiceQuestion choiceQuestion = freeSQL.GetRepository<ChoiceQuestion>().Where(a => a.ID == parentID).First();
 
                 if (choiceQuestion == null)
                 {
@@ -36,6 +37,7 @@ namespace StrokeFirstAidLibrary.BLL
 
             if (!string.IsNullOrEmpty(message))
             {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
                 result = APIResult.Error(message);
             }
 

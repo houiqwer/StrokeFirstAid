@@ -10,6 +10,13 @@ namespace StrokeFirstAidAPI.Controllers
     [ApiController]
     public class TimelineController : ControllerBase
     {
+
+        [HttpPost]
+        public APIResult Check([FromBody]PatientTimeline patientTimeline)
+        {
+            return new TimelineBLL().Check(patientTimeline);
+        }
+
         [HttpGet, Route("{patientID?}")]
         public APIResult CheckedList(int patientID)
         {
