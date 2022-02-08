@@ -19,7 +19,7 @@ namespace StrokeFirstAidLibrary.BLL
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                Timeline selectedTimeLine = freeSQL.GetRepository<Timeline>().Where(a => a.ID == patientTimeline.TimelineID).First();
+                Timeline selectedTimeLine = freeBaseSQL.GetRepository<Timeline>().Where(a => a.ID == patientTimeline.TimelineID).First();
                 if (selectedTimeLine == null)
                 {
                     throw new ExceptionUtil("未找到该时间点");
@@ -28,6 +28,7 @@ namespace StrokeFirstAidLibrary.BLL
                 PatientTimeline selectedPatientTimeline = freeSQL.GetRepository<PatientTimeline>().Where(a => a.PatientID == patientTimeline.PatientID && a.TimelineID == selectedTimeLine.ID).First();
                 if (selectedPatientTimeline == null)
                 {
+                    //patientTimeline.DoctorID=
                     freeSQL.GetRepository<PatientTimeline>().Insert(patientTimeline);
                 }
                 else
@@ -61,7 +62,9 @@ namespace StrokeFirstAidLibrary.BLL
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                List<Timeline> timelineList = freeSQL.Select<Timeline>().Where(a => freeSQL.Select<PatientTimeline>().Where(b => b.PatientID == patientID && b.TimelineID == a.ID).Any()).ToList();
+
+                List<int> patientTimeLineList = freeSQL.Select<PatientTimeline>().Where(b => b.PatientID == patientID).ToList(b => b.TimelineID);
+                List<Timeline> timelineList = freeBaseSQL.Select<Timeline>().Where(a => patientTimeLineList.Contains(a.ID)).ToList();
 
                 result = APIResult.Success("查询成功", timelineList);
             }
@@ -86,9 +89,8 @@ namespace StrokeFirstAidLibrary.BLL
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                List<Timeline> timelineList = freeSQL.Select<Timeline>().Where(a =>
-                !freeSQL.Select<PatientTimeline>().Where(b => b.PatientID == patientID && a.ID == b.TimelineID).Any()
-                ).ToList();
+                List<int> patientTimeLineList = freeSQL.Select<PatientTimeline>().Where(b => b.PatientID == patientID).ToList(b => b.TimelineID);
+                List<Timeline> timelineList = freeBaseSQL.Select<Timeline>().Where(a => !patientTimeLineList.Contains(a.ID)).ToList();
 
                 result = APIResult.Success("查询成功", timelineList);
             }

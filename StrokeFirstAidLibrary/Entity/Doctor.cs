@@ -1,31 +1,32 @@
-﻿using FreeSql;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FreeSql;
+using FreeSql.DataAnnotations;
 using ColumnAttribute = FreeSql.DataAnnotations.ColumnAttribute;
 using TableAttribute = FreeSql.DataAnnotations.TableAttribute;
 
 namespace StrokeFirstAidLibrary.Entity
 {
     [Table]
-    //包含所有树形选项内容，根节点从1开始，层级为1；可选菜单层级为2
-    public class ChoiceQuestion
+    public class Doctor
     {
         [Column(IsIdentity = true)]
         public int ID { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int? Value { get; set; }
-        public int Left { get; set; }
-        public int Right { get; set; }
-        public int Layer { get; set; }
 
-        [NotMapped]
-        public List<ChoiceQuestion> ChildChoiceQuestionList { get; set; } = new List<ChoiceQuestion>();
+        [Column(ServerTime = DateTimeKind.Utc, CanUpdate = false)]
+        public DateTime CreateDate { get; set; }
+
+        public bool? IsDelete { get; set; }
+
+        //public Doctor()
+        //{
+        //    Number = ((int)((DateTime.Now.Date - Convert.ToDateTime("2022-01-01").Date).TotalDays)).ToString().PadLeft(4, '0') + "-" + DateTime.Now.ToString("HHmmddfff");
+        //}
     }
-
-
 }

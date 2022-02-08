@@ -15,5 +15,11 @@ namespace StrokeFirstAidAPI.Controllers
         {
             return new ChoiceQuestionBLL().List(parentID);
         }
+
+        [HttpGet, Route("{parentID?}")]
+        public APIResult TreeList(int parentID)
+        {
+            return new ChoiceQuestionBLL().TreeList(parentID);
+        }
     }
 }

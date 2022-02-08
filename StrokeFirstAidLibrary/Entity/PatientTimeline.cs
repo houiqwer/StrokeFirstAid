@@ -20,6 +20,7 @@ namespace StrokeFirstAidLibrary.Entity
         public int ID { get; set; }
         public int PatientID { get; set; }
         public int TimelineID { get; set; }
+        public int DoctorID { get; set; }
         [Column(ServerTime = DateTimeKind.Utc)]
         public DateTime Date { get; set; }
         public string Remark { get; set; } = string.Empty;

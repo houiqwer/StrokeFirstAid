@@ -28,13 +28,13 @@ namespace StrokeFirstAidLibrary.Util
 
         public static string GenerateToken(int userID, DateTime expire)
         {
-            User user = freeSQL.GetRepository<User>().Where(a => a.ID == userID).First();
+            User user = freeBaseSQL.GetRepository<User>().Where(a => a.ID == userID).First();
             if (user != null)
             {
                 if (string.IsNullOrEmpty(user.Token))
                     user.Token = Guid.NewGuid().ToString();
                 user.Expire = expire;
-                freeSQL.GetRepository<User>().Update(user);
+                freeBaseSQL.GetRepository<User>().Update(user);
             }
             return user.Token;
         }

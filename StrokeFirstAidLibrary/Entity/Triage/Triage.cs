@@ -15,21 +15,27 @@ namespace StrokeFirstAidLibrary.Entity
     [Table]
     public class Triage : PatientRecord
     {
-        public FillingStatus? PatientInfo { get; set; }
-        public DateTime? DiseaseTime { get; set; }
+        public FillingStatus PatientInfo { get; set; } = FillingStatus.未填写;
         public bool? IsWUS { get; set; }
+        //IsWUS=false
+        public DateTime? DiseaseTime { get; set; }
+        //IsWUS=true
+        public DateTime? LastNormalTime { get; set; }
+        //IsWUS=true
+        public DateTime? FindTime { get; set; }
+
         public DateTime? EmergencyTreatmentTime { get; set; }
         public DateTime? ArrivalTime { get; set; }
         public ArrivalWay? ArrivalWay { get; set; }
         public DateTime? EmergencyReceivingTime { get; set; }
         public DateTime? CSReceivingTime { get; set; }
-        public int? CSReceivingDocID { get; set; }
+        public int? CSReceivingDoctorID { get; set; }
         public int? FASTEDRank { get; set; }
         public PatientCondition? PatientCondition { get; set; }
         public int? PremorbidMRSRank { get; set; }
-        public FillingStatus VitalSigns { get; set; }
-        public FillingStatus RapidBloodGLU { get; set; }
-        public FillingStatus CardiogramCheck { get; set; }
+        public FillingStatus VitalSigns { get; set; } = FillingStatus.未填写;
+        public FillingStatus RapidBloodGLU { get; set; } = FillingStatus.未填写;
+        public FillingStatus CardiogramCheck { get; set; } = FillingStatus.未填写;
         public bool? IsEstablishVeinPassage { get; set; }
         public DateTime? EstablishVeinPassageTime { get; set; }
         public decimal? Weight { get; set; }

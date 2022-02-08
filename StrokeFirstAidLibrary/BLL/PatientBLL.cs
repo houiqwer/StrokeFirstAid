@@ -18,8 +18,8 @@ namespace StrokeFirstAidLibrary.BLL
             string message = string.Empty;
             User loginUser = LoginHelper.CurrentUser();
             try
-            {               
-                freeSQL.GetRepository<Patient>().Insert(patient);
+            {
+                freePatientSQL.GetRepository<Patient>().Insert(patient);
                 //添加对应诊断数据
                 Triage triage = new Triage(patient.ID);
                 triage.ArrivalWay = arrivalWay;
