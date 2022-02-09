@@ -58,14 +58,14 @@ namespace StrokeFirstAidLibrary.BLL
 
             return result;
         }
-        public APIResult PatientInfoGet(int parentID)
+        public APIResult PatientInfoGet(int patientID)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == parentID).First();
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
                 if (patient == null)
                 {
                     throw new ExceptionUtil("未找到该患者");
@@ -132,14 +132,14 @@ namespace StrokeFirstAidLibrary.BLL
 
             return result;
         }
-        public APIResult DiseaseTimeGet(int parentID)
+        public APIResult DiseaseTimeGet(int patientID)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == parentID).First();
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
                 if (patient == null)
                 {
                     throw new ExceptionUtil("未找到该患者");
@@ -200,14 +200,14 @@ namespace StrokeFirstAidLibrary.BLL
 
             return result;
         }
-        public APIResult EmergencyTreatmentTimeGet(int parentID)
+        public APIResult EmergencyTreatmentTimeGet(int patientID)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == parentID).First();
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
                 if (patient == null)
                 {
                     throw new ExceptionUtil("未找到该患者");
@@ -265,14 +265,14 @@ namespace StrokeFirstAidLibrary.BLL
 
             return result;
         }
-        public APIResult ArrivalTimeGet(int parentID)
+        public APIResult ArrivalTimeGet(int patientID)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == parentID).First();
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
                 if (patient == null)
                 {
                     throw new ExceptionUtil("未找到该患者");
@@ -330,14 +330,14 @@ namespace StrokeFirstAidLibrary.BLL
 
             return result;
         }
-        public APIResult ArrivalWayGet(int parentID)
+        public APIResult ArrivalWayGet(int patientID)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == parentID).First();
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
                 if (patient == null)
                 {
                     throw new ExceptionUtil("未找到该患者");
@@ -396,14 +396,14 @@ namespace StrokeFirstAidLibrary.BLL
 
             return result;
         }
-        public APIResult EmergencyReceivingTimeGet(int parentID)
+        public APIResult EmergencyReceivingTimeGet(int patientID)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == parentID).First();
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
                 if (patient == null)
                 {
                     throw new ExceptionUtil("未找到该患者");
@@ -462,14 +462,14 @@ namespace StrokeFirstAidLibrary.BLL
 
             return result;
         }
-        public APIResult CSReceivingTimeGet(int parentID)
+        public APIResult CSReceivingTimeGet(int patientID)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == parentID).First();
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
                 if (patient == null)
                 {
                     throw new ExceptionUtil("未找到该患者");
@@ -497,40 +497,208 @@ namespace StrokeFirstAidLibrary.BLL
             return result;
         }
 
-        //public APIResult FASTEDRankEdit(Triage triage)
-        //{
-        //    APIResult result = new APIResult();
-        //    string message = string.Empty;
-        //    User loginUser = LoginHelper.CurrentUser();
-        //    try
-        //    {
-        //        Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == triage.PatientID).First();
-        //        if (patient == null)
-        //        {
-        //            throw new ExceptionUtil("未找到该患者");
-        //        }
+        public APIResult FASTEDRankGet(int patientID)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                ChoiceQuestion choiceQuestion = freeBaseSQL.GetRepository<ChoiceQuestion>().Where(a => a.ID == (int)QuestionRankID.FASTEDRank && a.Layer == 2).First();
 
-        //        Triage selectedTriage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
-        //        selectedTriage.CSReceivingTime = triage.CSReceivingTime;
-        //        selectedTriage.CSReceivingDoctorID = triage.CSReceivingDoctorID;
-        //        freeSQL.GetRepository<Triage>().Update(selectedTriage);
+                //获取患者选择的内容
+                List<ChoiceQuestion> fullChoiceQuestionList = freeBaseSQL.GetRepository<ChoiceQuestion>().Where(a => a.Left > choiceQuestion.Left && a.Right < choiceQuestion.Right && a.Value.HasValue).ToList();
+                List<int> fullChoiceQuestionIDList = fullChoiceQuestionList.Select(t => t.ID).ToList();
+                List<PatientChoice> patientChoiceList = freeSQL.Select<PatientChoice>().Where(a => a.PatientID == patientID && fullChoiceQuestionIDList.Contains(a.ChoiceQuestionID)).ToList();
 
-        //        new LogUtil().Add(LogCode.修改, "患者:" + patient.ID + "卒中医生接诊时间成功修改", loginUser);
-        //        result = APIResult.Success("患者卒中医生接诊时间修改成功", triage);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        message = ex.Message;
-        //    }
+                //获取分级
+                List<ChoiceQuestionGrade> choiceQuestionGradeList = freeBaseSQL.GetRepository<ChoiceQuestionGrade>().Where(a => a.ChoiceQuestionID == (int)QuestionRankID.FASTEDRank).ToList();
+                List<ChoiceQuestion> fullTreeChoiceQuestionList = freeBaseSQL.Select<ChoiceQuestion>().Where(a => a.Layer > choiceQuestion.Layer && a.Left > choiceQuestion.Left && a.Right < choiceQuestion.Right).OrderBy(t => t.Left).ToList();
 
-        //    if (!string.IsNullOrEmpty(message))
-        //    {
-        //        new LogUtil().Add(LogCode.修改错误, message, loginUser);
-        //        result = APIResult.Error(message);
-        //    }
+                result = APIResult.Success("患者FAST-ED评分获取成功", new
+                {
+                    triage.ID,
+                    triage.FASTEDRank,
+                    choiceQuestionGrade = choiceQuestionGradeList.First(t => t.Max >= triage.FASTEDRank),
+                    patientChoiceList,
+                    choiceQuestionGradeList,
+                    TreeChoiceQuestionList = new ChoiceQuestionBLL().GetChildChoiceQuestionList(choiceQuestion, fullTreeChoiceQuestionList),
+                    FASTEDRankParentID = (int)QuestionRankID.FASTEDRank,
+                });
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
 
-        //    return result;
-        //}
-        
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+            return result;
+        }
+
+        public APIResult PatientConditionGet(int patientID)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                ChoiceQuestion choiceQuestion = freeBaseSQL.GetRepository<ChoiceQuestion>().Where(a => a.ID == (int)QuestionRankID.PatientCondition && a.Layer == 2).First();
+
+                //获取患者选择的内容
+                List<ChoiceQuestion> fullChoiceQuestionList = freeBaseSQL.GetRepository<ChoiceQuestion>().Where(a => a.Left > choiceQuestion.Left && a.Right < choiceQuestion.Right && a.Value.HasValue).ToList();
+                List<int> fullChoiceQuestionIDList = fullChoiceQuestionList.Select(t => t.ID).ToList();
+                List<PatientChoice> patientChoiceList = freeSQL.Select<PatientChoice>().Where(a => a.PatientID == patientID && fullChoiceQuestionIDList.Contains(a.ChoiceQuestionID)).ToList();
+
+                result = APIResult.Success("患者病情分级获取成功", new
+                {
+                    triage.ID,
+                    triage.PatientCondition,
+                    patientChoiceList,
+                    PatientConditionParentID = (int)QuestionRankID.PatientCondition,
+                });
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+            return result;
+        }
+        public APIResult PremorbidMRSRankGet(int patientID)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                ChoiceQuestion choiceQuestion = freeBaseSQL.GetRepository<ChoiceQuestion>().Where(a => a.ID == (int)QuestionRankID.PremorbidMRSRank && a.Layer == 2).First();
+
+                //获取患者选择的内容
+                List<ChoiceQuestion> fullChoiceQuestionList = freeBaseSQL.GetRepository<ChoiceQuestion>().Where(a => a.Left > choiceQuestion.Left && a.Right < choiceQuestion.Right && a.Value.HasValue).ToList();
+                List<int> fullChoiceQuestionIDList = fullChoiceQuestionList.Select(t => t.ID).ToList();
+                List<PatientChoice> patientChoiceList = freeSQL.Select<PatientChoice>().Where(a => a.PatientID == patientID && fullChoiceQuestionIDList.Contains(a.ChoiceQuestionID)).ToList();
+
+                result = APIResult.Success("患者发病前MRS评分获取成功", new
+                {
+                    triage.ID,
+                    triage.PremorbidMRSRank,
+                    patientChoiceList,
+                    PatientConditionParentID = (int)QuestionRankID.PatientCondition,
+                });
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+            return result;
+        }
+
+        public APIResult VitalSignsEdit(VitalSigns vitalSigns)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == vitalSigns.PatientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+
+                VitalSigns selectedVitalSigns = freeSQL.GetRepository<VitalSigns>().Where(a => a.PatientID == patient.ID).First();
+                if (selectedVitalSigns == null)
+                {
+                    freeSQL.GetRepository<VitalSigns>().Insert(selectedVitalSigns);
+                }
+                else
+                {
+                    freeSQL.GetRepository<VitalSigns>().Attach(selectedVitalSigns);
+                    selectedVitalSigns = BaseUtil.XmlDeepCopy(vitalSigns);
+                    freeSQL.GetRepository<VitalSigns>().Update(selectedVitalSigns);
+                }
+
+                //修改首页显示内容，是否已填写所有数据              
+                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                triage.VitalSigns = selectedVitalSigns.GetFillingStatus();
+                freeSQL.GetRepository<Triage>().Update(triage);
+
+                new LogUtil().Add(LogCode.修改, "患者:" + patient.ID + "生命体征成功修改", loginUser);
+                result = APIResult.Success("患者生命体征修改成功", selectedVitalSigns);
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.修改错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+
+            return result;
+        }
+        public APIResult VitalSignsGet(int patientID)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+                VitalSigns selectedVitalSigns = freeSQL.GetRepository<VitalSigns>().Where(a => a.PatientID == patient.ID).First();
+                result = APIResult.Success("患者生命体征获取成功", selectedVitalSigns);
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+            return result;
+        }
+
     }
 }

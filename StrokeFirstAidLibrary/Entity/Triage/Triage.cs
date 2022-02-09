@@ -34,13 +34,18 @@ namespace StrokeFirstAidLibrary.Entity
         public PatientCondition? PatientCondition { get; set; }
         public int? PremorbidMRSRank { get; set; }
         public FillingStatus VitalSigns { get; set; } = FillingStatus.未填写;
-        public FillingStatus RapidBloodGLU { get; set; } = FillingStatus.未填写;
+        public decimal? RapidBloodGLU { get; set; } 
+        public DateTime? RapidBloodGLUTime { get; set; }
         public FillingStatus CardiogramCheck { get; set; } = FillingStatus.未填写;
         public bool? IsEstablishVeinPassage { get; set; }
         public DateTime? EstablishVeinPassageTime { get; set; }
         public decimal? Weight { get; set; }
         public DateTime? CollectBloodTime { get; set; }
 
+        public Triage()
+        {
+
+        }
         public Triage(int patientID)
         {
             PatientID = patientID;

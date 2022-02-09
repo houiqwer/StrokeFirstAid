@@ -22,4 +22,15 @@ namespace StrokeFirstAidLibrary.Entity
     }
 
 
+    public enum QuestionRankID
+    {
+        FASTEDRank = 20,
+        PatientCondition = 25,
+        PremorbidMRSRank = 33,
+        FirstNIHSSRank = 112,
+        FirstGCSRank = 131,
+        BeforeThrombolysisNIHSSRank = 210,
+        AfterThrombolysisNIHSSRank = 289
+    }
+
 }

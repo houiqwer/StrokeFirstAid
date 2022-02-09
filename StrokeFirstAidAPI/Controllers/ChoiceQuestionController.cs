@@ -21,5 +21,11 @@ namespace StrokeFirstAidAPI.Controllers
         {
             return new ChoiceQuestionBLL().TreeList(parentID);
         }
+
+        [HttpPost]
+        public APIResult Score(int patientID, int choiceQuestionID, List<ChoiceQuestion> choiceQuestionList)
+        {
+            return new ChoiceQuestionBLL().Score(patientID, choiceQuestionID, choiceQuestionList);
+        }
     }
 }

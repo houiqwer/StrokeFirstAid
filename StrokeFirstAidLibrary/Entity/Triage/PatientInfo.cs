@@ -13,11 +13,8 @@ using TableAttribute = FreeSql.DataAnnotations.TableAttribute;
 namespace StrokeFirstAidLibrary.Entity
 {
     [Table]
-    public class PatientInfo
+    public class PatientInfo : PatientRecord
     {
-        [Column(IsIdentity = true)]
-        public int ID { get; set; }
-        public int PatientID { get; set; }
         public string Name { get; set; } = string.Empty;
         public int? Age { get; set; }
         public Sex? Sex { get; set; }

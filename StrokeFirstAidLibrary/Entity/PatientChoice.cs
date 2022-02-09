@@ -12,19 +12,12 @@ using TableAttribute = FreeSql.DataAnnotations.TableAttribute;
 namespace StrokeFirstAidLibrary.Entity
 {
     [Table]
-    //包含所有树形选项内容，根节点从1开始，层级为1；可选菜单层级为2
-    public class ChoiceQuestion
+    public class PatientChoice
     {
         [Column(IsIdentity = true)]
         public int ID { get; set; }
-        public string Name { get; set; } = string.Empty;
-        public int? Value { get; set; }
-        public int Left { get; set; }
-        public int Right { get; set; }
-        public int Layer { get; set; }
-
-        [NotMapped]
-        public List<ChoiceQuestion> ChildChoiceQuestionList { get; set; } = new List<ChoiceQuestion>();
+        public int PatientID { get; set; }
+        public int ChoiceQuestionID { get; set; }
     }
 
 }
