@@ -10,6 +10,12 @@ namespace StrokeFirstAidAPI.Controllers
     [ApiController]
     public class TriageController : ControllerBase
     {
+        [HttpGet, Route("{patientID?}")]
+        public APIResult TriageGet(int patientID)
+        {
+            return new TriageBLL().TriageGet(patientID);
+        }
+
         [HttpPost]
         public APIResult PatientInfoEdit([FromBody] PatientInfo patientInfo)
         {

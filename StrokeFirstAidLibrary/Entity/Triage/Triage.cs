@@ -36,7 +36,7 @@ namespace StrokeFirstAidLibrary.Entity
         public FillingStatus VitalSigns { get; set; } = FillingStatus.未填写;
         public decimal? RapidBloodGLU { get; set; } 
         public DateTime? RapidBloodGLUTime { get; set; }
-        public FillingStatus CardiogramCheck { get; set; } = FillingStatus.未填写;
+        public FillingStatus Cardiogram { get; set; } = FillingStatus.未填写;
         public bool? IsEstablishVeinPassage { get; set; }
         public DateTime? EstablishVeinPassageTime { get; set; }
         public decimal? Weight { get; set; }

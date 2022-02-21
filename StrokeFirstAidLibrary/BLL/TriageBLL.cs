@@ -11,7 +11,53 @@ using System.Threading.Tasks;
 namespace StrokeFirstAidLibrary.BLL
 {
     public class TriageBLL
-    {
+    {       
+        public APIResult TriageGet(int patientID)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                result = APIResult.Success("患者分诊信息获取成功", new
+                {
+                    triage.ID,
+                    PatientInfo = Enum.GetName(typeof(FillingStatus), triage.PatientInfo),
+                    IsWUS = triage.IsWUS.HasValue ? (((triage.LastNormalTime.HasValue && triage.FindTime.HasValue) || triage.DiseaseTime.HasValue) ? FillingStatus.已完成 : FillingStatus.部分填写) : FillingStatus.未填写,
+                    triage.EmergencyTreatmentTime,
+                    triage.ArrivalTime,
+                    ArrivalWay = triage.ArrivalWay.HasValue ? Enum.GetName(typeof(ArrivalWay), triage.ArrivalWay) : FillingStatus.未填写.ToString(),
+                    triage.EmergencyReceivingTime,
+                    triage.CSReceivingTime,
+                    triage.FASTEDRank,
+                    PatientCondition = triage.PatientCondition.HasValue ? Enum.GetName(typeof(PatientCondition), triage.PatientCondition) : FillingStatus.未填写.ToString(),
+                    triage.PremorbidMRSRank,
+                    VitalSigns = Enum.GetName(typeof(FillingStatus), triage.VitalSigns),
+                    triage.RapidBloodGLU,
+                    Cardiogram = Enum.GetName(typeof(FillingStatus), triage.Cardiogram),
+                    IsEstablishVeinPassage = triage.IsEstablishVeinPassage.HasValue ? (!triage.IsEstablishVeinPassage.Value || (triage.IsEstablishVeinPassage.Value && triage.EstablishVeinPassageTime.HasValue) ? FillingStatus.已完成.ToString() : FillingStatus.部分填写.ToString()) : FillingStatus.未填写.ToString(),
+                    triage.Weight,
+                    triage.CollectBloodTime
+                });
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+            return result;
+        }
         public APIResult PatientInfoEdit(PatientInfo patientInfo)
         {
             APIResult result = new APIResult();
@@ -700,5 +746,276 @@ namespace StrokeFirstAidLibrary.BLL
             return result;
         }
 
+        public APIResult RapidBloodGLUEdit(Triage triage)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == triage.PatientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+
+                Triage selectedTriage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                selectedTriage.RapidBloodGLU = triage.RapidBloodGLU;
+                selectedTriage.RapidBloodGLUTime = triage.RapidBloodGLUTime;
+
+                freeSQL.GetRepository<Triage>().Update(selectedTriage);
+
+                new LogUtil().Add(LogCode.修改, "患者:" + patient.ID + "快速血糖成功修改", loginUser);
+                result = APIResult.Success("患者快速血糖修改成功", triage);
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.修改错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+
+            return result;
+        }
+        public APIResult RapidBloodGLUGet(int patientID)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                result = APIResult.Success("患者快速血糖获取成功", new
+                {
+                    triage.ID,
+                    triage.RapidBloodGLU,
+                    triage.RapidBloodGLUTime
+                });
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+            return result;
+        }
+
+
+
+        public APIResult EstablishVeinPassageEdit(Triage triage)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == triage.PatientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+
+                Triage selectedTriage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                selectedTriage.IsEstablishVeinPassage = triage.IsEstablishVeinPassage;
+
+                if (triage.IsEstablishVeinPassage.HasValue && triage.IsEstablishVeinPassage.Value)
+                {
+                    selectedTriage.EstablishVeinPassageTime = triage.EstablishVeinPassageTime;
+                }
+
+                freeSQL.GetRepository<Triage>().Update(selectedTriage);
+
+                new LogUtil().Add(LogCode.修改, "患者:" + patient.ID + "开通静脉通道成功修改", loginUser);
+                result = APIResult.Success("患者开通静脉通道修改成功", triage);
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.修改错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+
+            return result;
+        }
+        public APIResult EstablishVeinPassageGet(int patientID)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                result = APIResult.Success("患者开通静脉通道获取成功", new
+                {
+                    triage.ID,
+                    triage.IsEstablishVeinPassage,
+                    triage.EstablishVeinPassageTime
+                });
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+            return result;
+        }
+
+        public APIResult WeightEdit(Triage triage)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == triage.PatientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+
+                Triage selectedTriage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                selectedTriage.Weight = triage.Weight;
+                freeSQL.GetRepository<Triage>().Update(selectedTriage);
+
+                new LogUtil().Add(LogCode.修改, "患者:" + patient.ID + "体重成功修改", loginUser);
+                result = APIResult.Success("患者体重修改成功", triage);
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.修改错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+
+            return result;
+        }
+        public APIResult WeightGet(int patientID)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                result = APIResult.Success("患者体重获取成功", new
+                {
+                    triage.ID,
+                    triage.Weight
+                });
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+            return result;
+        }
+
+        public APIResult CollectBloodTimeEdit(Triage triage)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == triage.PatientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+
+                Triage selectedTriage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                selectedTriage.CollectBloodTime = triage.CollectBloodTime;
+                freeSQL.GetRepository<Triage>().Update(selectedTriage);
+
+                new LogUtil().Add(LogCode.修改, "患者:" + patient.ID + "采血时间成功修改", loginUser);
+                result = APIResult.Success("患者采血时间修改成功", triage);
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.修改错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+
+            return result;
+        }
+        public APIResult CollectBloodTimeGet(int patientID)
+        {
+            APIResult result = new APIResult();
+            string message = string.Empty;
+            User loginUser = LoginHelper.CurrentUser();
+            try
+            {
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientID).First();
+                if (patient == null)
+                {
+                    throw new ExceptionUtil("未找到该患者");
+                }
+                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
+                result = APIResult.Success("患者采血时间获取成功", new
+                {
+                    triage.ID,
+                    triage.CollectBloodTime
+                });
+            }
+            catch (Exception ex)
+            {
+                message = ex.Message;
+            }
+
+            if (!string.IsNullOrEmpty(message))
+            {
+                new LogUtil().Add(LogCode.获取错误, message, loginUser);
+                result = APIResult.Error(message);
+            }
+            return result;
+        }
     }
 }
