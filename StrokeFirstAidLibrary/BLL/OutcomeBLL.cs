@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 
 namespace StrokeFirstAidLibrary.BLL
 {
-    public class TriageBLL
-    {       
-        public APIResult TriageGet(int patientID)
+    public class OutcomeBLL
+    {
+        public APIResult OutcomeGet(int patientID)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
@@ -24,26 +24,13 @@ namespace StrokeFirstAidLibrary.BLL
                 {
                     throw new ExceptionUtil("未找到该患者");
                 }
-                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
-                result = APIResult.Success("患者分诊信息获取成功", new
+                Outcome outcome = freeSQL.GetRepository<Outcome>().Where(a => a.PatientID == patient.ID).First();
+                result = APIResult.Success("患者转归信息获取成功", new
                 {
-                    triage.ID,
-                    PatientInfo = Enum.GetName(typeof(FillingStatus), triage.PatientInfo),
-                    IsWUS = triage.IsWUS.HasValue ? (((triage.LastNormalTime.HasValue && triage.FindTime.HasValue) || triage.DiseaseTime.HasValue) ? FillingStatus.已完成 : FillingStatus.部分填写) : FillingStatus.未填写,
-                    triage.EmergencyTreatmentTime,
-                    triage.ArrivalTime,
-                    ArrivalWay = triage.ArrivalWay.HasValue ? Enum.GetName(typeof(ArrivalWay), triage.ArrivalWay) : FillingStatus.未填写.ToString(),
-                    triage.EmergencyReceivingTime,
-                    triage.CSReceivingTime,
-                    triage.FASTEDRank,
-                    PatientCondition = triage.PatientCondition.HasValue ? Enum.GetName(typeof(PatientCondition), triage.PatientCondition) : FillingStatus.未填写.ToString(),
-                    triage.PremorbidMRSRank,
-                    VitalSigns = Enum.GetName(typeof(FillingStatus), triage.VitalSigns),
-                    triage.RapidBloodGLU,
-                    Cardiogram = Enum.GetName(typeof(FillingStatus), triage.Cardiogram),
-                    IsEstablishVeinPassage = triage.IsEstablishVeinPassage.HasValue ? (!triage.IsEstablishVeinPassage.Value || (triage.IsEstablishVeinPassage.Value && triage.EstablishVeinPassageTime.HasValue) ? FillingStatus.已完成.ToString() : FillingStatus.部分填写.ToString()) : FillingStatus.未填写.ToString(),
-                    triage.Weight,
-                    triage.CollectBloodTime
+                    outcome.ID,
+                    OutcomeDelay = Enum.GetName(typeof(FillingStatus), outcome.OutcomeDelay),
+                    PatientGo = outcome.PatientGo.HasValue ? Enum.GetName(typeof(PatientGo), outcome.PatientGo) : FillingStatus.未填写.ToString(),
+                    IsFiling = outcome.IsFiling.HasValue ? FillingStatus.已完成.ToString() : "未提交",
                 });
             }
             catch (Exception ex)
@@ -58,38 +45,39 @@ namespace StrokeFirstAidLibrary.BLL
             }
             return result;
         }
-        public APIResult PatientInfoEdit(PatientInfo patientInfo)
+
+        public APIResult OutcomeDelayEdit(OutcomeDelay outcomeDelay)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
             User loginUser = LoginHelper.CurrentUser();
             try
             {
-                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == patientInfo.PatientID).First();
+                Patient patient = freePatientSQL.GetRepository<Patient>().Where(a => a.ID == outcomeDelay.PatientID).First();
                 if (patient == null)
                 {
                     throw new ExceptionUtil("未找到该患者");
                 }
 
-                PatientInfo selectedPatientInfo = freeSQL.GetRepository<PatientInfo>().Where(a => a.PatientID == patient.ID).First();
-                if (selectedPatientInfo == null)
+                OutcomeDelay selectedOutcomeDelay = freeSQL.GetRepository<OutcomeDelay>().Where(a => a.PatientID == patient.ID).First();
+                if (selectedOutcomeDelay == null)
                 {
-                    freeSQL.GetRepository<PatientInfo>().Insert(selectedPatientInfo);
+                    freeSQL.GetRepository<OutcomeDelay>().Insert(selectedOutcomeDelay);
                 }
                 else
                 {
-                    freeSQL.GetRepository<PatientInfo>().Attach(selectedPatientInfo);
-                    selectedPatientInfo = BaseUtil.XmlDeepCopy(patientInfo);
-                    freeSQL.GetRepository<PatientInfo>().Update(selectedPatientInfo);
+                    freeSQL.GetRepository<OutcomeDelay>().Attach(selectedOutcomeDelay);
+                    selectedOutcomeDelay = BaseUtil.XmlDeepCopy(outcomeDelay);
+                    freeSQL.GetRepository<OutcomeDelay>().Update(selectedOutcomeDelay);
                 }
 
                 //修改首页显示内容，是否已填写所有数据              
-                Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
-                triage.PatientInfo = patientInfo.GetFillingStatus();
-                freeSQL.GetRepository<Triage>().Update(triage);
+                Outcome outcome = freeSQL.GetRepository<Outcome>().Where(a => a.PatientID == patient.ID).First();
+                outcome.OutcomeDelay = outcomeDelay.GetFillingStatus();
+                freeSQL.GetRepository<Outcome>().Update(outcome);
 
-                new LogUtil().Add(LogCode.修改, "患者:" + patient.ID + "基本信息成功修改", loginUser);
-                result = APIResult.Success("患者基本信息修改成功", selectedPatientInfo);
+                new LogUtil().Add(LogCode.修改, "患者:" + patient.ID + "耗时原因成功修改", loginUser);
+                result = APIResult.Success("患者耗时原因修改成功", selectedOutcomeDelay);
             }
             catch (Exception ex)
             {
@@ -104,7 +92,7 @@ namespace StrokeFirstAidLibrary.BLL
 
             return result;
         }
-        public APIResult PatientInfoGet(int patientID)
+        public APIResult OutcomeDelayGet(int patientID)
         {
             APIResult result = new APIResult();
             string message = string.Empty;
@@ -116,8 +104,9 @@ namespace StrokeFirstAidLibrary.BLL
                 {
                     throw new ExceptionUtil("未找到该患者");
                 }
-                PatientInfo selectedPatientInfo = freeSQL.GetRepository<PatientInfo>().Where(a => a.PatientID == patient.ID).First();
-                result = APIResult.Success("患者基本信息获取成功", selectedPatientInfo);
+
+                OutcomeDelay selectedOutcomeDelay = freeSQL.GetRepository<OutcomeDelay>().Where(a => a.PatientID == patient.ID).First();
+                result = APIResult.Success("患者耗时原因获取成功", selectedOutcomeDelay);
             }
             catch (Exception ex)
             {
@@ -699,7 +688,7 @@ namespace StrokeFirstAidLibrary.BLL
 
                 //修改首页显示内容，是否已填写所有数据              
                 Triage triage = freeSQL.GetRepository<Triage>().Where(a => a.PatientID == patient.ID).First();
-                triage.VitalSigns = vitalSigns.GetFillingStatus();
+                triage.VitalSigns = selectedVitalSigns.GetFillingStatus();
                 freeSQL.GetRepository<Triage>().Update(triage);
 
                 new LogUtil().Add(LogCode.修改, "患者:" + patient.ID + "生命体征成功修改", loginUser);

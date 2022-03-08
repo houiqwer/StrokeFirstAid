@@ -13,7 +13,7 @@ using TableAttribute = FreeSql.DataAnnotations.TableAttribute;
 namespace StrokeFirstAidLibrary.Entity
 {
     [Table]
-    public class IntravenousThrombolysis : PatientRecord
+    public class InterventionalTherapy : PatientRecord
     {
         public DateTime? ReceivingTime { get; set; }
         public int? ReceivingDoctorID { get; set; }
@@ -23,18 +23,18 @@ namespace StrokeFirstAidLibrary.Entity
         public DateTime? SignTime { get; set; }
         public DateTime? FinishConversationTime { get; set; }
         public int? ConversationMinute { get; set; }
-        public int? BeforeThrombolysisNIHSSRank { get; set; }
-        public DateTime? BeforeThrombolysisNIHSSTime { get; set; }
-        public bool? IsThrombolysis { get; set; }
-        public int? AfterThrombolysisNIHSSRank { get; set; }
-        public DateTime? AfterThrombolysisNIHSSTime { get; set; }
+        public int? BeforeInterventionNIHSSRank { get; set; }
+        public DateTime? BeforeInterventionNIHSSTime { get; set; }
+        public bool? IsIntervention { get; set; }
+        public int? AfterInterventionNIHSSRank { get; set; }
+        public DateTime? AfterInterventionNIHSSTime { get; set; }
         public bool? UntowardReaction { get; set; }
 
-        public IntravenousThrombolysis()
+        public InterventionalTherapy()
         {
 
         }
-        public IntravenousThrombolysis(int patientID)
+        public InterventionalTherapy(int patientID)
         {
             PatientID = patientID;
         }
